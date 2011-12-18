@@ -2,7 +2,7 @@ package com._3kbo.rdfizers.xml
 
 /**
 * Xml Schema file RDFizer
-* @author rhanc004
+* @author Richard Hancock
 *
 */
 
