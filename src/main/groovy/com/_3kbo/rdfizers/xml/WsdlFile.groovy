@@ -5,7 +5,8 @@ package com._3kbo.rdfizers.xml
 * Provides operations common to the different types of Xml files
 * used in the Datapower Appliance, i.e. Xml schemas, WSDLs, XSLT Transforms.
 * In particular support is provided for working with imported files
-* @author rhanc004
+* 
+* @author Richard Hancock
 *
 */
 class WsdlFile extends XmlFile {

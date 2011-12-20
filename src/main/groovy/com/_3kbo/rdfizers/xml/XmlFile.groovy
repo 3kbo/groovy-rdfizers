@@ -7,7 +7,7 @@ package com._3kbo.rdfizers.xml
 * (See http://www.w3.org/TeamSubmission/n3/)
 * If the RDF file does not already exist a new RDF file is created in the same directory as the XML file
 * 
-* @author rhanc004
+* @author Richard Hancock
 *
 */
 abstract class XmlFile {

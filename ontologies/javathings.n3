@@ -1,0 +1,168 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix jt: <http://www.3kbo.com/ontologies/javathings#> .
+@prefix jtc: <http://www.3kbo.com/javathings/classes/> .
+
+jt:JavaThing a owl:Class ;
+	rdfs:label "Java Thing"^^xsd:string ;
+	rdfs:subClassOf owl:Thing .
+	
+jt:JavaPackage a owl:Class ;
+	rdfs:label "Java Package"^^xsd:string ;
+	rdfs:subClassOf jt:JavaThing .	
+	
+jt:JavaClass a owl:Class ;
+	rdfs:label "Java Class"^^xsd:string ;
+	rdfs:subClassOf jt:JavaThing .
+	
+jt:JavaInterface a owl:Class ;
+	rdfs:label "Java interface"^^xsd:string ;
+	rdfs:subClassOf jt:JavaThing .	
+	
+jt:JavaMethod a owl:Class ;
+	rdfs:comment "A method provides functionality" ;
+	rdfs:label "Java Method"^^xsd:string ;
+	rdfs:subClassOf jt:JavaThing .	
+	
+jt:JavaArchive a owl:Class ;
+	rdfs:label "Java Archive"^^xsd:string ;
+	rdfs:subClassOf jt:JavaThing .			
+
+jt:Jar a owl:Class ;
+	rdfs:label "Jar"^^xsd:string ;
+	rdfs:subClassOf jt:JavaArchive .
+	
+jt:War a owl:Class ;
+	rdfs:label "War"^^xsd:string ;
+	rdfs:subClassOf jt:JavaArchive .
+		
+jt:Ear a owl:Class ;
+	rdfs:label "Ear"^^xsd:string ;
+	rdfs:subClassOf jt:JavaArchive .			
+	
+jt:JavaWebApplication a owl:Class ;
+	rdfs:comment "A Java Web Application is packaged as a war file which may be deployed individually to a Java Application Server or deployed as part of the a JEE Application ear file"^^xsd:string ;
+	rdfs:label "Java Web Application"^^xsd:string ;
+	rdfs:subClassOf jt:JavaArchive .		
+	
+jt:JavaApplicationServer a owl:Class ;
+	rdfs:comment "Java Application Server"^^xsd:string ;
+	rdfs:label "Java Application Server"^^xsd:string ;
+	rdfs:subClassOf jt:JavaThing .	
+	
+jt:JavaFramework a owl:Class ;
+	rdfs:comment "Java Framework"^^xsd:string ;
+	rdfs:label "Java Framework"^^xsd:string ;
+	rdfs:subClassOf jt:JavaThing .
+	
+jt:File a owl:Class ;
+	rdfs:comment "A File or Directory which is a JavaThing"^^xsd:string ;
+	rdfs:label "File"^^xsd:string ;
+	rdfs:subClassOf jt:JavaThing .	
+	
+jt:Directory a owl:Class ;
+	rdfs:comment "A directory containing Java Things"^^xsd:string ;
+	rdfs:label "Directory"^^xsd:string ;
+	rdfs:subClassOf jt:File .
+
+jt:SubDirectory a owl:Class ;
+	rdfs:comment "A sub directory of a directory containing Java Things"^^xsd:string ;
+	rdfs:label "SubDirectory"^^xsd:string ;
+	rdfs:subClassOf jt:Directory .	
+	
+jt:path a owl:DatatypeProperty ;
+	rdfs:label "path"^^xsd:string ;
+	rdfs:comment "The full path to a file or directory, e.g. the location pointing of a Jar file or a Java Class or Source file."^^xsd:string ;	
+	rdfs:domain jt:File ;
+	rdfs:range xsd:string .		
+	
+jt:home a owl:ObjectProperty ;
+	rdfs:label "home directory"^^xsd:string ;
+	rdfs:comment "Home directory, typically a file location pointing to the top level directory of a Java Framework or Java Application Server."^^xsd:string ;	
+	rdfs:domain jt:JavaThing ;
+	rdfs:range jt:Directory .			
+	
+jt:contains a owl:TransitiveProperty ;
+	rdfs:label "contains"^^xsd:string ;
+	rdfs:comment "This is a simple contains relationship, for example a Java Framework contains a number of Jar files which in turn contain Java Classes."^^xsd:string ;	
+	rdfs:domain jt:JavaThing ;
+	rdfs:range jt:JavaThing .	
+	
+jt:container a owl:TransitiveProperty ;
+	rdfs:label "container"^^xsd:string ;
+	rdfs:domain jt:JavaThing ;
+	rdfs:range jt:JavaThing ;
+	owl:inverseOf jt:contains .	
+
+jt:dependsOn a owl:TransitiveProperty ;
+	rdfs:comment "The subject (typically a software component, application or services) depends on functionality provided by the object (also typically a software component, application or services)." ;
+	rdfs:label "depends on"^^xsd:string ;
+	rdfs:domain rdfs:JavaThing ;
+	rdfs:range rdfs:JavaThing .	
+		
+jt:isRequiredBy a owl:TransitiveProperty ;
+	rdfs:comment "The subject (typically a software component, application or services) provides functionality which is required by the object (also typically a software component, application or services)." ;
+	rdfs:label "is required by"^^xsd:string ;
+	owl:inverseOf ei:dependsOn .		
+			
+jt:import a owl:TransitiveProperty ;
+	rdfs:label "import"^^xsd:string ;
+	rdfs:comment "An import is an explicit dependency, declared in Java code"^^xsd:string ;	
+	rdfs:domain jt:JavaThing ;
+	rdfs:range jt:JavaThing ;
+	rdfs:subPropertyOf jt:dependsOn .	
+
+jt:package a owl:ObjectProperty ;
+	rdfs:label "package"^^xsd:string ;
+	rdfs:domain jt:JavaClass , jt:JavaInterface ;
+	rdfs:range jt:JavaPackage .	
+
+jt:jarPackage a owl:TransitiveProperty ;
+	rdfs:label "package"^^xsd:string ;
+	rdfs:domain jt:Jar ;
+	rdfs:range jt:JavaPackage .
+
+jt:jar a owl:TransitiveProperty ;
+	rdfs:label "jar"^^xsd:string ;
+	rdfs:domain jt:JavaThing ;
+	rdfs:range jt:Jar .
+	
+jt:instaniates a owl:ObjectProperty ;
+	rdfs:label "instaniates"^^xsd:string ;
+	rdfs:domain jt:JavaClass ;
+	rdfs:range jt:JavaThing .
+	
+	
+#Example	
+
+bea:BEA a jt:JavaFramework ;
+bea:BEA_HOME jt:path <file:/C:/NotBackedUp/bea> .
+bea:BEA	jt:home bea:BEA_HOME .
+
+bea:CodePointIMJar a jt:Jar;
+	jt:path <file:/C:/NotBackedUp/bea/jdk160_05/demo/jfc/CodePointIM/CodePointIM.jar> ;	
+	
+jtc:CodePointIM a jt:JavaClass .
+	jt:container bea:CodePointIMJar ;
+	jt:package <jt:defaultPackage> . 
+	
+jtc:com/sun/inputmethods/internal/codepointim/CodePointInputMethod a jt:JavaClass .
+	jt:container bea:CodePointIMJar ;
+	jt:package <jt:com/sun/inputmethods/internal/codepointim> .		
+	
+jtc:com/sun/inputmethods/internal/codepointim/CodePointInputMethodDescriptor a jt:JavaClass .
+	jt:container bea:CodePointIMJar ;
+	jt:package <jt:com/sun/inputmethods/internal/codepointim> .	
+	
+bea:BEA jt:contains bea:CodePointIMJar .
+		
+		
+
+			
+					
+		
+
+
+		
