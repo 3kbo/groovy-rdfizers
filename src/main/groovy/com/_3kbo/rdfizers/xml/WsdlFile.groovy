@@ -88,13 +88,14 @@ ${rdfURI} dp:uses <${i.@schemaLocation}> .
 		
 		println "user.dir: ${System.getProperty('user.dir')}"
 				
-		def wsdl = new WsdlFile(new File("."), "schemas/interfaces/wsdls/incomesupport-services/v1.x/benefit.wsdl")
+		def wsdl = new WsdlFile(new File("."), "examples/ear-schemas/income-support-services-schemas/schemas/interfaces/wsdls/incomesupport-services/v1.x/benefit.wsdl")
 		println "wsdl name: ${wsdl.name}"
 		println "wsdl targetNamespace: ${wsdl.targetNamespace}"
 		println "wsdl absolutePath: ${wsdl.xmlFile.absolutePath}"
 		println "wsdl canonicalPath: ${wsdl.xmlFile.canonicalPath}"
-		
-		
+		println "wsdl rdfType: ${wsdl.rdfType}"
+		println "wsdl rdfURI: ${wsdl.rdfURI}"
+		println "wsdl rdfDescription: ${wsdl.rdfDescription}"
 	}
 
 }
