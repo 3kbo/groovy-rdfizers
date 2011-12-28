@@ -18,6 +18,9 @@ abstract class XmlFile {
 
 	//Name of the Xml file
 	String name
+	
+	//Protocol or URI Scheme (file: or http:) used to access the file or URL
+	String protocol
 
 	//The relative path to the directory containing the Xml File.
 	//This is relative to the directory the application is run from
@@ -81,6 +84,14 @@ abstract class XmlFile {
    String getURI() {
 	   return "${targetNamespace}/${resourceName}"
    }
+   
+   /**
+   * The URI of the Xmlfile
+   * @return URI
+   */
+  String getUri() {
+	  return "${targetNamespace}/${resourceName}"
+  }
    
    /**
    * RDF URI string for the Xmlfile
@@ -194,6 +205,40 @@ abstract class XmlFile {
    def abstract getRdfType();
 
    /**
+    * getDescribe provides an RDF graph based on information that can 
+    * be read directly from the source Xml file.  
+    * @return
+    */
+   def abstract getDescribe();
+   
+   /**
+   * getImports recurses through the imported Xml Schemas, 
+   * writing their RDF descriptions to the RDF file
+   * @return
+   */
+  def abstract getImports();
+  
+  /**
+  * getIncludes recurses through the included Xml Schemas,
+  * writing their RDF descriptions to the RDF file
+  * @return
+  */
+ def abstract getIncludes();
+ 
+ /**
+ * getFileDescription - generically describes the file
+ * @return
+ */
+def getFileDescription() {
+"""
+${getRdfURI()} rdf:type ${rdfType};
+  file:name "${name}"^^xsd:string ;
+  file:absolutePath "${xmlFile.absolutePath}"^^xsd:string ;
+  file:canonicalPath "${xmlFile.canonicalPath}"^^xsd:string .
+"""
+}
+
+   /**
 	* Generic RDF statements describing the Xml file
 	* @return
 	*/
@@ -213,9 +258,8 @@ ${getRdfURI()} rdf:type ${rdfType};
   def getRdfImportStatement(String namespace, String schemaLocation) {
 	  
 	  def importURI = getImportURI(namespace,schemaLocation)
-	  return """
-${getRdfURI()} dp:uses ${importURI} .
 """
+${getRdfURI()} dp:imports ${importURI} ."""
   }
 
 /**
@@ -228,10 +272,11 @@ ${getRdfURI()} dp:uses ${importURI} .
    File getRdfFile() {
 	   if (rdfFile == null && name != null) {
 
-		   String directory = System.getProperty('user.dir') + "/rdf"
-		   File parent = new File(directory)
-		   parent.mkdirs()
-
+//		   String directory = System.getProperty('user.dir') + "/rdf"
+//		   File parent = new File(directory)
+//		   parent.mkdirs()
+		   
+		   File parent = new File(".")
 		   String fileName = name + ".n3"
 		   rdfFile = new File(parent,fileName);
 		   rdfFile.delete()
