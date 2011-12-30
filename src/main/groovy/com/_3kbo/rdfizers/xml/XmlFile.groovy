@@ -82,7 +82,11 @@ abstract class XmlFile {
 	* @return URI
 	*/
    String getURI() {
-	   return "${targetNamespace}/${resourceName}"
+	   
+	  if (targetNamespace.endsWith("/")) {
+		  return "${targetNamespace}${resourceName}"
+	  }
+	  "${targetNamespace}/${resourceName}"
    }
    
    /**
@@ -90,7 +94,10 @@ abstract class XmlFile {
    * @return URI
    */
   String getUri() {
-	  return "${targetNamespace}/${resourceName}"
+	  if (targetNamespace.endsWith("/")) {
+		  return "${targetNamespace}${resourceName}"
+	  }
+	  "${targetNamespace}/${resourceName}"
   }
    
    /**
@@ -98,7 +105,10 @@ abstract class XmlFile {
    * @return URI
    */
   String getRdfURI() {
-	  return "<${targetNamespace}/${resourceName}>"
+	  if (targetNamespace.endsWith("/")) {
+		  return "<${targetNamespace}${resourceName}>"
+	  }
+	  "<${targetNamespace}/${resourceName}>"
   }
   
   /**

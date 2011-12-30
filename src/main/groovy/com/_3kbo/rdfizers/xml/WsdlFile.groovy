@@ -1,14 +1,16 @@
 package com._3kbo.rdfizers.xml
 
+import org.apache.log4j.*
+import groovy.util.logging.*
+
 
 /**
-* Provides operations common to the different types of Xml files
-* used in the Datapower Appliance, i.e. Xml schemas, WSDLs, XSLT Transforms.
-* In particular support is provided for working with imported files
+* WsdlFile provides methods for describing a wsdl file in RDF
 * 
 * @author Richard Hancock
 *
 */
+@Log4j
 class WsdlFile extends XmlFile {
 	
 	/**
@@ -95,10 +97,8 @@ def getOperations() {
 		operations += """\n${rdfURI} wsdl:version "${version}"^^xsd:string ."""
 	}
 	
-	println "wsdlXml.binding ${wsdlXml.binding.@name.text()}"
-	
 	for (i in wsdlXml.binding.operation) {
-		println "i: ${i.@name.text()}"
+		log.debug "operation: ${serviceName}.${i.@name.text()}"
 		operations += """\n${rdfURI} wsdl:operation <${uri}/${i.@name.text()}> ."""
 		operations += """\n<${uri}/${i.@name.text()}> rdf:type wsdl:Operation ;"""
 		operations += """\n  rdfs:label "${serviceName}.${i.@name.text()}"^^xsd:string ;"""		
@@ -141,25 +141,25 @@ def getRdfImportStatement(String namespace, String schemaLocation) {
 ${getRdfURI()} wsdl:import ${importURI} ."""
 }
  
- /**
- * getDescribeIncludes recurses through the included Xml Schemas,
- * writing their RDF descriptions to the RDF file
- * @return
- */
- @Override
-def getIncludes() {
-	def wsdlXml = new XmlSlurper().parse(xmlFile)
+	/**
+ 	* getDescribeIncludes recurses through the included Xml Schemas,
+	* writing their RDF descriptions to the RDF file
+ 	* @return
+ 	*/
+ 	@Override
+	def getIncludes() {
+		def wsdlXml = new XmlSlurper().parse(xmlFile)
 	
-	def testForIncludes = wsdlXml.types.schema.include
-	println "Wsdl Include count: ${testForIncludes.size()}"
+		def testForIncludes = wsdlXml.types.schema.include
+		println "Wsdl Include count: ${testForIncludes.size()}"
 	
-	String includes = ""
+		String includes = ""
 	
-	for (i in wsdlXml.types.schema.include) {
-		includes += getRdfImportStatement(i.@namespace.text(), i.@schemaLocation.text())
+		for (i in wsdlXml.types.schema.include) {
+			includes += getRdfImportStatement(i.@namespace.text(), i.@schemaLocation.text())
+		}
+		return includes
 	}
-	return includes
-}
    
 	/**
 	* The file extension used to represent the WsdlFile
@@ -190,6 +190,30 @@ def getIncludes() {
 		}
 		"""exported: ${name}"""
 	}
+	
+	/**
+	 * Export the RDF description of the WSDL file in N3 format to the output file.
+	 * The export includes the RDF descriptions of all the imported Xml Schemas,
+	 * including the Xml Schemas that they import etc...
+	 * @param output
+	 * @return
+	 */
+   def export(File output) {
+	   output.withWriterAppend(){ it << describe }
+	   def wsdlXml = new XmlSlurper().parse(xmlFile)
+			   
+	   for (i in wsdlXml.types.schema.import) {
+		   try {
+			   def xsd = new XsdFile(getImportFile(i.@schemaLocation.text()), output)
+			   println "xsd URI: ${xsd.rdfURI} "
+			   xsd.export(output)
+		   }
+		   catch (e) {
+			   println "Error: ${e}"
+		   }
+	   }
+	   """exported: ${name}"""
+   }
 	
 	static main(args) {
 		
